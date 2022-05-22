@@ -1,0 +1,22 @@
+07:25:58 => [error] first log message!
+07:25:58 => [error] /home/zhangxi/MyWorkspace/mprpc_dir/example/callee/friendservice.cc:main:44
+07:25:58 => [info] service_name: FriendServiceRpc
+07:25:58 => [info] method_name: GetFriendsList
+07:25:58 => [info] RpcProvider start service at ip: 127.0.0.1, port: 8000
+07:59:27 => [error] first log message!
+07:59:27 => [error] /home/zhangxi/MyWorkspace/mprpc_dir/example/callee/friendservice.cc:main:44
+07:59:27 => [info] service_name: FriendServiceRpc
+07:59:27 => [info] method_name: GetFriendsList
+08:00:22 => [error] first log message!
+08:00:22 => [error] /home/zhangxi/MyWorkspace/mprpc_dir/example/callee/friendservice.cc:main:44
+08:00:22 => [info] service_name: FriendServiceRpc
+08:00:22 => [info] method_name: GetFriendsList
+08:00:22 => [info] RpcProvider start service at ip: 127.0.0.1, port: 8000
+08:00:22 => [info] ====================================
+08:01:26 => [info] header_size: 36
+08:01:26 => [info] rpc_header_str: 
+FriendServiceRpcGetFriendsList
+08:01:26 => [info] service_name: FriendServiceRpc
+08:01:26 => [info] method_name: GetFriendsList
+08:01:26 => [info] args_str: è
+08:01:26 => [info] ====================================

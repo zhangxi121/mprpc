@@ -1,0 +1,73 @@
+
+
+zk对外提供分布式协调服务:
+    1. zk的数据是怎么组织的--znode节点,
+    2. zk的watch机制,
+    通过这2个点给分布式环境对外提供了协调服务,
+        znode:
+            zk存储数据的方式,一种特殊的文件系统,
+            /
+            /node_1
+            /node_2
+            /node_3
+                /node_1/node_1_1
+                /node_1/node_1_2
+                /node_1/node_1_3
+            每个节点都可以存储数据,默认的大小是1M,是可以设置大小的,
+
+        ls  get  create  set  delete
+        //
+        [zk: localhost:2181(CONNECTED) 0] ls /
+        [zookeeper]
+        //
+        [zk: localhost:2181(CONNECTED) 2] get /zookeeper 
+    
+        //
+        [zk: localhost:2181(CONNECTED) 1] ls /zookeeper  
+        [quota]
+        [zk: localhost:2181(CONNECTED) 2] get /zookeeper/quota
+
+        //
+        [zk: localhost:2181(CONNECTED) 5] create /sl 20
+        Created /sl
+        [zk: localhost:2181(CONNECTED) 6] ls /
+        [sl, zookeeper]
+        [zk: localhost:2181(CONNECTED) 7] get /sl
+
+        //
+        [zk: localhost:2181(CONNECTED) 8] create /sl/sl2/sl3 30 
+        Node does not exist: /sl/sl2/sl3   因为父节点 "/sl/sl2/" 不存在
+
+        //
+        [zk: localhost:2181(CONNECTED) 11] get /sl   
+        20
+        [zk: localhost:2181(CONNECTED) 10] set /sl 30
+        [zk: localhost:2181(CONNECTED) 11] get /sl   
+        30
+
+        //
+        [zk: localhost:2181(CONNECTED) 12] delete /sl 
+
+
+    //
+
+
+   
+    zookeeper c语言 客户端的编译
+        ~/package/zookeeper-3.4.10/src/c$ sudo ./configure
+        ~/package/zookeeper-3.4.10/src/c$ sudo make
+        ~/package/zookeeper-3.4.10/src/c$ sudo make install
+
+
+
+    zookeeper 心跳:  sudo  tcpdump -i lo port 2181^C
+
+
+
+
+
+
+
+
+
+

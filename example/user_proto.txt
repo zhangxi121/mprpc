@@ -1,0 +1,119 @@
+syntax = "proto3";  //
+
+
+package fixbug; // 声明了代码所在的包,c++ 来说是 namespace ,
+
+
+// 定义下面的选项,表示生成服务类和rpc方法描述,默认不生成,
+option cc_generic_services=true;   // ==> "protoc test.proto --cpp_out=./"
+
+
+// "protoc test.proto --cpp_out=./"
+
+
+message ResultCode{
+    int32 errcode = 1;
+    bytes errmsg = 2;
+}
+
+message LoginRequest{
+    bytes name = 1;
+    bytes pwd = 2;
+}
+
+message LoginResponse{
+    ResultCode result = 1;
+    bool success = 2;
+}
+
+
+service UserServiceRpc{
+    rpc Login(LoginRequest) returns(LoginResponse);
+}
+
+
+/* 
+
+1. message LoginRequest 生成 class LoginRequest : public google::protobuf::Message {} 提供数据
+   message LoginResponse 同样生成 class  LoginResponse : public google::protobuf::Message{} 数据类,
+
+    class LoginRequest :{
+    public:
+        const std::string& name() const  { return name_.Get(); }
+        void set_name(ArgT0&& arg0, ArgT... args)  { name_.SetBytes(); }
+        const std::string& pwd() const  { return pwd_.Get(); }
+        void set_pwd(ArgT0&& arg0, ArgT... args)  { pwd_.SetBytes(); }
+    private:
+        struct google::protobuf::internal::ArenaStringPtr name_;  
+        struct google::protobuf::internal::ArenaStringPtr pwd_;  
+    };
+
+2. service UserServiceRpc 会生成 
+    class UserServiceRpc : public google::protobuf::Service{
+    public:
+        virtual void Login(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
+                        const ::fixbug::LoginRequest* request,
+                        ::fixbug::LoginResponse* response,
+                        ::google::protobuf::Closure* done);
+    };
+
+    class UserServiceRpc_Stub : public UserServiceRpc{
+    public:
+        void Login(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
+                        const ::fixbug::LoginRequest* request,
+                        ::fixbug::LoginResponse* response,
+                        ::google::protobuf::Closure* done);
+    };
+
+3. Provider 发布端
+
+    class UserService : public fixbug::UserServiceRpc
+    {
+    public:
+        bool Login(std::string name, std::string pwd)
+        {
+            // 本地方法, 每一个远程方法对应一个本地方法, 远程方法名字可以不用和本地方法名字一样,
+            return true;
+        }
+        
+        // 重写基类 UserServiceRpc::Login() 虚函数, 下面这些方法都是框架直接调用的,
+        // 1. caller  ===>  rpc Login(LoginRequest)  =>  muduo  =>  callee
+        // 2. callee  ===>  rpc Login(LoginRequest)  =>  UserService::Login(controller, request, response, done),
+        
+        virtual void Login(::google::protobuf::RpcController *controller,
+                        const ::fixbug::LoginRequest *request,
+                        ::fixbug::LoginResponse *response,
+                        ::google::protobuf::Closure *done)
+        {
+            // 远程方法, 每一个远程方法对应一个本地方法, 远程方法名字可以不用和本地方法名字一样,
+            // 1. 从 LoginRequest *request 获取参数的值,
+            // 2. 执行本地方法, 并获取返回值,
+            // 3. 用上面的 LoginResponse *response 返回值,填写 LoginResponse,
+            // 4. 一个回调    done->Run();  把 LoginResponse 发送给 rpcClient 调用端,
+            // 执行回调操作, 执行响应对象数据的序列化和网络发送(都是由框架来完成的),
+            done->Run();
+        }
+    };
+
+
+4. Provider main()
+
+    int main(int argc,  char** argv)
+    {
+        // 使用框架..
+
+        // 调用框架的初始化操作,  provider -i config.conf 
+        MprpcApplication::Init(argc, argv);
+
+        // 把 UserService 对象发布到 rpc 节点上, 站点上发布多个 rpc 服务,  provider.NotifyService, 
+        RpcProvider provider;
+        provider.NotifyService(new UserService());
+
+        // 启动一个 rpc 服务发布节点, Run 以后, 进程进入阻塞状态, 等待远程的 rpc 调用请求,
+        provider.Run();  // 从此网络模块启动了, 负责网络的首发,
+        // 
+
+        return 0;
+    }
+
+*/

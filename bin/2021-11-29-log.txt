@@ -1,0 +1,7 @@
+
+23:07:18 => first log message!
+23:07:18 => /home/zhangxi/MyWorkspace/mprpc_dir/example/callee/friendservice.cc:main:44
+23:23:12 => [error] first log message!
+23:23:12 => [error] /home/zhangxi/MyWorkspace/mprpc_dir/example/callee/friendservice.cc:main:44
+23:23:12 => [info] service_name: FriendServiceRpc
+23:23:12 => [info] method_name: GetFriendsList
